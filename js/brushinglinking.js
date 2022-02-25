@@ -15,7 +15,7 @@ let brush1;
 let myCircles1; 
 
 // TODO: Append svg object to the body of the page to house Scatterplot2 (call it svg2)
-let svg2 = d3.select("#vis-holder")
+const svg2 = d3.select("#vis-holder")
               .append("svg")
                 .attr("width", width - margin.left - margin.right)
                 .attr("height", height - margin.top - margin.bottom)
@@ -109,7 +109,7 @@ d3.csv("data/iris.csv").then((data) => {
                               .style("opacity", 0.5);
 
     // TODO: Define a brush (call it brush1) and add brush1 to svg1
-    svg1.call(d3.brush1()
+    let brush1 = svg1.call(d3.brush()
         .extent([[0,0], [width, height]]
     ));
     
@@ -177,7 +177,7 @@ d3.csv("data/iris.csv").then((data) => {
                               .style("opacity", 0.5);
 
     // TODO: Define a brush (call it brush1) and add brush1 to svg1
-    svg2.call(d3.brush2()
+    let brush2 = svg2.call(d3.brush()
         .extent([[0,0], [width, height]]
     ));
   }
@@ -195,7 +195,7 @@ d3.csv("data/iris.csv").then((data) => {
     ];
 
     // Create X scale
-    let x3 = d3.scaleLinear()
+    let x3 = d3.scaleBand()
                 .domain(bar_data.map((d) => d.Species))
                 .range([margin.left, width-margin.right])
                 .padding(0.1); 
@@ -214,7 +214,7 @@ d3.csv("data/iris.csv").then((data) => {
       );
 
     // Find max y 
-    let maxY3 = d3.max(data, (d) => { return d[yKey3]; });
+    let maxY3 = d3.max(bar_data, (d) => { return d[yKey3]; });
 
     // Create Y scale
     let y3 = d3.scaleLinear()
@@ -228,7 +228,7 @@ d3.csv("data/iris.csv").then((data) => {
         .attr("font-size", '20px') 
         .call((g) => g.append("text")
                       .attr("x", 0)
-                      .attr("y", margin.top)
+                      .attr("y", margin.top - 10)
                       .attr("fill", "black")
                       .attr("text-anchor", "end")
                       .text(yKey3)
@@ -236,14 +236,14 @@ d3.csv("data/iris.csv").then((data) => {
 
     // Add points
     const myBars3 = svg3.selectAll(".bar")
-                            .data(data)
+                            .data(bar_data)
                             .enter()
-                              .append("bar_data")
+                              .append("rect")
                               .attr("class", "bar")
-                              .attr("x", (d, i) => x3(i))
+                              .attr("x", (d) => x3(d[xKey3]))
                               .attr("y", (d) => y3(d[yKey3]))
-                              .attr("height", (d) => (height - margin.bottom) - y3(d.Count))
-                              .attr("width", x3.bandwith())
+                              .attr("height", (d) => (height - margin.bottom) - y3(d[yKey3]))
+                              .attr("width", x3.bandwidth())
                               .style("fill", (d) => color(d.Species))
                               .style("opacity", 0.5);
     
