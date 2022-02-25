@@ -263,12 +263,26 @@ d3.csv("data/iris.csv").then((data) => {
   function updateChart1(brushEvent) {
       
       //TODO: Find coordinates of brushed region 
-  
-      //TODO: Give bold outline to all points within the brush region in Scatterplot1
+      extent = d3.event.selection;
+      console.log(extent);
 
+      //TODO: Give bold outline to all points within the brush region in Scatterplot1
+      myCircles1.classed("selected", function(d){ 
+        return isBrushed(extent, x1(d.Sepal_Length), y1(d.Petal_Length))})
+      
+      myPoints2.classed("selected", function(d){ 
+        return isBrushed(extent, x2(d.Sepal_Width), y2(d.Petal_Width))})
+      
+      // A function that return TRUE or FALSE according if a dot is in the selection or not
+      function isBrushed(brush_coords, cx, cy) {
+          var x0 = brush_coords[0][0],
+              x1 = brush_coords[1][0],
+              y0 = brush_coords[0][1],
+              y1 = brush_coords[1][1];
+          return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;    // This return TRUE or FALSE depending on if the points is in the selected area
       //TODO: Give bold outline to all points in Scatterplot2 corresponding to points within the brush region in Scatterplot1
-    
-  }
+      }
+    }
 
   // Call when Scatterplot2 is brushed 
   function updateChart2(brushEvent) {
