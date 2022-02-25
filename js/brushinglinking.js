@@ -143,7 +143,7 @@ d3.csv("data/iris.csv").then((data) => {
                       .text(xKey2)
       );
 
-    // Finx max y 
+    // Find max y 
     let maxY2 = d3.max(data, (d) => { return d[yKey2]; });
 
     // Create Y scale
@@ -170,8 +170,8 @@ d3.csv("data/iris.csv").then((data) => {
                             .enter()
                               .append("circle")
                               .attr("id", (d) => d.id)
-                              .attr("cx", (d) => x1(d[xKey2]))
-                              .attr("cy", (d) => y1(d[yKey2]))
+                              .attr("cx", (d) => x2(d[xKey2]))
+                              .attr("cy", (d) => y2(d[yKey2]))
                               .attr("r", 8)
                               .style("fill", (d) => color(d.Species))
                               .style("opacity", 0.5);
@@ -185,6 +185,68 @@ d3.csv("data/iris.csv").then((data) => {
   //TODO: Barchart with counts of different species
   {
     // Bar chart code here 
+    let xKey3 = "Species";
+    let yKey3 = "Count";
+
+    const bar_data = [
+      {Species: 'setosa', Count: 50},
+      {Species: 'versicolor', Count: 50},
+      {Species: 'virginica', Count: 50}
+    ];
+
+    // Create X scale
+    let x3 = d3.scaleLinear()
+                .domain(bar_data.map((d) => d.Species))
+                .range([margin.left, width-margin.right])
+                .padding(0.1); 
+    
+    // Add x axis 
+    svg3.append("g")
+        .attr("transform", `translate(0,${height - margin.bottom})`) 
+        .call(d3.axisBottom(x3))   
+        .attr("font-size", '20px')
+        .call((g) => g.append("text")
+                      .attr("x", width - margin.right)
+                      .attr("y", margin.bottom - 4)
+                      .attr("fill", "black")
+                      .attr("text-anchor", "end")
+                      .text(xKey3)
+      );
+
+    // Find max y 
+    let maxY3 = d3.max(data, (d) => { return d[yKey3]; });
+
+    // Create Y scale
+    let y3 = d3.scaleLinear()
+                .domain([0, maxY3])
+                .range([height - margin.bottom, margin.top]); 
+
+    // Add y axis 
+    svg3.append("g")
+        .attr("transform", `translate(${margin.left}, 0)`) 
+        .call(d3.axisLeft(y3)) 
+        .attr("font-size", '20px') 
+        .call((g) => g.append("text")
+                      .attr("x", 0)
+                      .attr("y", margin.top)
+                      .attr("fill", "black")
+                      .attr("text-anchor", "end")
+                      .text(yKey3)
+      );
+
+    // Add points
+    const myBars3 = svg3.selectAll(".bar")
+                            .data(data)
+                            .enter()
+                              .append("bar_data")
+                              .attr("class", "bar")
+                              .attr("x", (d, i) => x3(i))
+                              .attr("y", (d) => y3(d[yKey3]))
+                              .attr("height", (d) => (height - margin.bottom) - y3(d.Count))
+                              .attr("width", x3.bandwith())
+                              .style("fill", (d) => color(d.Species))
+                              .style("opacity", 0.5);
+    
   }
 
   //Brushing Code---------------------------------------------------------------------------------------------
@@ -194,6 +256,7 @@ d3.csv("data/iris.csv").then((data) => {
       svg1.call(brush1.move, null);
       
       //TODO: add code to clear existing brush from svg2
+      svg2.call(brush2.move, null);
   }
 
   // Call when Scatterplot1 is brushed 
