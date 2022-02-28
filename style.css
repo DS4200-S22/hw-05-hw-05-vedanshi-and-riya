@@ -3,7 +3,7 @@ body {
 }
 
 .selected {
-  opacity: 1 !important;
+  opacity: 1;
   stroke: black;
   stroke-width: 1px;
 }

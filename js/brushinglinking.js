@@ -109,7 +109,7 @@ d3.csv("data/iris.csv").then((data) => {
                               .style("opacity", 0.5);
 
     // TODO: Define a brush (call it brush1)
-    let brush1 = d3.brush().extent([[0, 0], [width, height]]);
+    brush1 = d3.brush().extent([[0, 0], [width, height]]);
 
     // TODO: Add brush1 to svg1
     svg1.call(brush1
@@ -180,7 +180,7 @@ d3.csv("data/iris.csv").then((data) => {
                               .style("opacity", 0.5);
 
     // TODO: Define a brush (call it brush1)
-    let brush2 = d3.brush().extent([[0, 0], [width, height]]);
+    brush2 = d3.brush().extent([[0, 0], [width, height]]);
 
     //TODO: Add brush2 to svg2
     svg2.call(brush2
@@ -225,8 +225,7 @@ d3.csv("data/iris.csv").then((data) => {
     // Create Y scale
     let y3 = d3.scaleLinear()
                 .domain([0, maxY3])
-                .range([height - margin.bottom, margin.top])
-                .padding(0.2); 
+                .range([height - margin.bottom, margin.top]); 
 
     // Add y axis 
     svg3.append("g")
