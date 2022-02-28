@@ -108,10 +108,13 @@ d3.csv("data/iris.csv").then((data) => {
                               .style("fill", (d) => color(d.Species))
                               .style("opacity", 0.5);
 
-    // TODO: Define a brush (call it brush1) and add brush1 to svg1
-    let brush1 = svg1.call(d3.brush()
-        .extent([[0,0], [width, height]]
-    ));
+    // TODO: Define a brush (call it brush1)
+    let brush1 = d3.brush().extent([[0, 0], [width, height]]);
+
+    // TODO: Add brush1 to svg1
+    svg1.call(brush1
+      .on("start", clear)
+      .on("brush", updateChart1));
     
   }
 
@@ -176,10 +179,13 @@ d3.csv("data/iris.csv").then((data) => {
                               .style("fill", (d) => color(d.Species))
                               .style("opacity", 0.5);
 
-    // TODO: Define a brush (call it brush1) and add brush1 to svg1
-    let brush2 = svg2.call(d3.brush()
-        .extent([[0,0], [width, height]]
-    ));
+    // TODO: Define a brush (call it brush1)
+    let brush2 = d3.brush().extent([[0, 0], [width, height]]);
+
+    //TODO: Add brush2 to svg2
+    svg2.call(brush2
+      .on('start', clear)
+      .on("brush", updateChart2));
   }
 
   //TODO: Barchart with counts of different species
@@ -219,7 +225,8 @@ d3.csv("data/iris.csv").then((data) => {
     // Create Y scale
     let y3 = d3.scaleLinear()
                 .domain([0, maxY3])
-                .range([height - margin.bottom, margin.top]); 
+                .range([height - margin.bottom, margin.top])
+                .padding(0.2); 
 
     // Add y axis 
     svg3.append("g")
@@ -263,40 +270,45 @@ d3.csv("data/iris.csv").then((data) => {
   function updateChart1(brushEvent) {
       
       //TODO: Find coordinates of brushed region 
-      extent = d3.event.selection;
-      console.log(extent);
+      let extent = d3.brushSelection(this);
 
       //TODO: Give bold outline to all points within the brush region in Scatterplot1
       myCircles1.classed("selected", function(d){ 
         return isBrushed(extent, x1(d.Sepal_Length), y1(d.Petal_Length))})
       
+      //TODO: Give bold outline to all points in Scatterplot2 corresponding to points within the brush region in Scatterplot1
       myPoints2.classed("selected", function(d){ 
         return isBrushed(extent, x2(d.Sepal_Width), y2(d.Petal_Width))})
-      
-      // A function that return TRUE or FALSE according if a dot is in the selection or not
-      function isBrushed(brush_coords, cx, cy) {
-          var x0 = brush_coords[0][0],
-              x1 = brush_coords[1][0],
-              y0 = brush_coords[0][1],
-              y1 = brush_coords[1][1];
-          return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;    // This return TRUE or FALSE depending on if the points is in the selected area
-      //TODO: Give bold outline to all points in Scatterplot2 corresponding to points within the brush region in Scatterplot1
-      }
+
     }
 
   // Call when Scatterplot2 is brushed 
   function updateChart2(brushEvent) {
     
     //TODO: Find coordinates of brushed region 
+    let extent = d3.brushSelection(this);
 
     //TODO: Start an empty set that you can store names of selected species in 
+    let speciesSelection = new Set();
   
     //TODO: Give bold outline to all points within the brush region in Scatterplot2 & collected names of brushed species
-
+    myPoints2.classed("selected", function (d) { 
+      isSelected = isBrushed(extent, x2(d.Sepal_Width), y2(d.Petal_Width));
+      if (isSelected) {
+        speciesSelection.add(d.Species); // Add selected species to set
+      }
+      return isSelected;
+   })
+    
     //TODO: Give bold outline to all points in Scatterplot1 corresponding to points within the brush region in Scatterplot2
+    myCircles1.classed("selected", function (d) { 
+      return isBrushed(extent, x1(d.Sepal_Width), y1(d.Petal_Width));
+   })
 
     //TODO: Give bold outline to all bars in bar chart with corresponding to species selected by Scatterplot2 brush
-
+    myBars3.classed("selected", function (d) { 
+      return speciesSelection.has(d.Species);
+    })
   }
 
     //Finds dots within the brushed region
