@@ -3,6 +3,9 @@ const margin = { top: 50, right: 50, bottom: 50, left: 200 };
 const width = 900 - margin.left - margin.right;
 const height = 650 - margin.top - margin.bottom;
 
+/*
+Scatter plot (chart 1) set up and initialization
+*/ 
 // Append svg object to the body of the page to house Scatterplot1
 const svg1 = d3.select("#vis-holder")
                 .append("svg")
@@ -10,21 +13,27 @@ const svg1 = d3.select("#vis-holder")
                 .attr("height", height - margin.top - margin.bottom)
                 .attr("viewBox", [0, 0, width, height]); 
 
-// Initialize brush for Scatterplot1 and points. We will need these to be global. 
+// Initialize brush for Scatterplot1 and points. So that they are global. 
 let brush1; 
 let myCircles1; 
 
-// Append svg object to the body of the page to house Scatterplot2 (call it svg2)
+/*
+Scatter plot (chart 2) set up and initialization
+*/ 
+// Append svg object to the body of the page to house Scatterplot2 (called svg2)
 const svg2 = d3.select("#vis-holder")
               .append("svg")
                 .attr("width", width - margin.left - margin.right)
                 .attr("height", height - margin.top - margin.bottom)
                 .attr("viewBox", [0, 0, width, height]);
 
-// Initialize brush for Scatterplot2 and points. We will need these to be global.
+// Initialize brush for Scatterplot2 and points. So that they are global.
 let brush2;
 let myPoints2;
 
+/*
+Bar chart (chart 3) set up and initialization
+*/ 
 // Append svg object to the body of the page to house bar chart 
 const svg3 = d3.select("#vis-holder")
                 .append("svg")
@@ -32,7 +41,7 @@ const svg3 = d3.select("#vis-holder")
                 .attr("height", height - margin.top - margin.bottom)
                 .attr("viewBox", [0, 0, width, height]); 
 
-// Initialize bars. We will need these to be global. 
+// Initialize bars. So that they are global. 
 let myBars3;
 
 // Define color scale
@@ -43,14 +52,17 @@ const color = d3.scaleOrdinal()
 // Plotting 
 d3.csv("data/iris.csv").then((data) => {
   
-  // We will need scales for all of the following charts to be global
+  // So that the scales for all of the following charts are global
   let x1, y1, x2, y2, x3, y3;  
 
-  // We will need keys to be global
+  // So that the keys are global
   let xKey1, yKey1, xKey2, yKey2, xKey3, yKey3;
 
-  // Scatterplot1
+  /*
+  Scatterplot1
+  */
   {
+    // initializing the x and y axes keys
     xKey1 = "Sepal_Length";
     yKey1 = "Petal_Length";
 
@@ -108,7 +120,7 @@ d3.csv("data/iris.csv").then((data) => {
                               .style("fill", (d) => color(d.Species))
                               .style("opacity", 0.5);
 
-    // Define a brush (call it brush1)
+    // Define a brush (brush1)
     brush1 = d3.brush().extent([[0, 0], [width, height]]);
 
     // Add brush1 to svg1
@@ -118,10 +130,13 @@ d3.csv("data/iris.csv").then((data) => {
     
   }
 
-  // Scatterplot 2 (show Sepal width on x-axis and Petal width on y-axis)
+  /*
+  Scatterplot 2 
+  (showing Sepal width on x-axis and Petal width on y-axis)
+  */
     
-  // Scatterplot2
   {
+    // initializing the x and y axes keys
     xKey2 = "Sepal_Width";
     yKey2 = "Petal_Width";
 
@@ -188,12 +203,16 @@ d3.csv("data/iris.csv").then((data) => {
       .on("brush", updateChart2));
   }
 
-  // Barchart with counts of different species
+  /*
+  Barchart with counts of different species
+  */
+  
   {
-    // Bar chart code here 
+    // initializing the x and y axes keys
     xKey3 = "Species";
     yKey3 = "Count";
 
+    // initializing and harcoding the bar chart data
     const bar_data = [
       {Species: 'setosa', Count: 50},
       {Species: 'versicolor', Count: 50},
@@ -202,11 +221,11 @@ d3.csv("data/iris.csv").then((data) => {
 
     // Create X scale
     x3 = d3.scaleBand()
-                .domain(d3.range(bar_data.length)) //CHANGE HERE
+                .domain(d3.range(bar_data.length))
                 .range([margin.left, width-margin.right])
                 .padding(0.1); 
 
-    // Add x axis 
+    // Add X axis 
     svg3.append("g")
         .attr("transform", `translate(0,${height - margin.bottom})`) 
         .call(d3.axisBottom(x3)
@@ -247,7 +266,7 @@ d3.csv("data/iris.csv").then((data) => {
                             .enter()
                               .append("rect")
                               .attr("class", "bar")
-                              .attr("x", (d, i) => x3(i)) //CHANGE HERE
+                              .attr("x", (d, i) => x3(i)) 
                               .attr("y", (d) => y3(d.Count))
                               .attr("height", (d) => (height - margin.bottom) - y3(d.Count))
                               .attr("width", x3.bandwidth())
@@ -256,8 +275,9 @@ d3.csv("data/iris.csv").then((data) => {
     
   }
 
-  //Brushing Code---------------------------------------------------------------------------------------------
-    
+  /*
+  Brushing Code---------------------------------------------------------------------------------------------
+  */  
   // Call to removes existing brushes 
   function clear() {
       svg1.call(brush1.move, null);
@@ -269,30 +289,30 @@ d3.csv("data/iris.csv").then((data) => {
   // Call when Scatterplot1 is brushed 
   function updateChart1(brushEvent) {
       
-      // Find coordinates of brushed region 
+      // Finds coordinates of brushed region 
       let selection = d3.brushSelection(this);
 
-      // Give bold outline to all points within the brush region in Scatterplot1
+      // Gives bold outline to all points within the brush region in Scatterplot1
       myCircles1.classed("selected", function(d) {
         return isBrushed(selection, x1(d.Sepal_Length), y1(d.Petal_Length))
       })
       
-      // Give bold outline to all points in Scatterplot2 corresponding to points within the brush region in Scatterplot1
+      // Gives bold outline to all points in Scatterplot2 corresponding to points within the brush region in Scatterplot1
       myPoints2.classed("selected", function(d) { 
-        return isBrushed(selection, x1(d.Sepal_Length), y1(d.Petal_Length))})
-
+        return isBrushed(selection, x1(d.Sepal_Length), y1(d.Petal_Length))
+      })
     }
 
-  // Call when Scatterplot2 is brushed 
+  // Called when Scatterplot2 is brushed 
   function updateChart2(brushEvent) {
     
-    // Find coordinates of brushed region 
+    // Finds coordinates of brushed region 
     let selection = d3.brushSelection(this);
 
-    // Start an empty set that you can store names of selected species in 
+    // Starts an empty set that you can store names of selected species in 
     let speciesSelection = new Set();
   
-    // Give bold outline to all points within the brush region in Scatterplot2 & collected names of brushed species
+    // Gives bold outline to all points within the brush region in Scatterplot2 & collected names of brushed species
     myPoints2.classed("selected", function (d) {       
       isSelected = isBrushed(selection, x2(d.Sepal_Width), y2(d.Petal_Width));
       if (isSelected) {
@@ -301,12 +321,12 @@ d3.csv("data/iris.csv").then((data) => {
       return isSelected;
    })
     
-    // Give bold outline to all points in Scatterplot1 corresponding to points within the brush region in Scatterplot2
+    // Gives bold outline to all points in Scatterplot1 corresponding to points within the brush region in Scatterplot2
     myCircles1.classed("selected", function (d) { 
       return isBrushed(selection, x2(d.Sepal_Width), y2(d.Petal_Width));
    })
 
-    // Give bold outline to all bars in bar chart with corresponding to species selected by Scatterplot2 brush
+    // Gives bold outline to all bars in bar chart with corresponding to species selected by Scatterplot2 brush
     myBars3.classed("selected", function (d) { 
       return speciesSelection.has(d.Species);
     })
@@ -323,3 +343,4 @@ d3.csv("data/iris.csv").then((data) => {
       return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1; // This return TRUE or FALSE depending on if the points is in the selected area
     }
 });
+// references mentioned in the ReadMe are used.
